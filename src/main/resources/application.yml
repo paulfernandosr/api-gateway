@@ -1,0 +1,43 @@
+server:
+  port: 8099
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: bank-account-service
+          uri: lb://bank-account-service
+          predicates:
+            - Path=/bank-accounts/**
+          filters:
+            - RewritePath=/bank-accounts/(?<x>.*), /$\{x}
+        - id: credit-service
+          uri: lb://credit-service
+          predicates:
+            - Path=/credits/**
+          filters:
+            - RewritePath=/credits/(?<x>.*), /$\{x}
+        - id: customer-service
+          uri: lb://customer-service
+          predicates:
+            - Path=/customers/**
+          filters:
+            - RewritePath=/customers/(?<x>.*), /$\{x}
+        - id: movement-service
+          uri: lb://movement-service
+          predicates:
+            - Path=/movements/**
+          filters:
+            - RewritePath=/movements/(?<x>.*), /$\{x}
